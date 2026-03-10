@@ -31,33 +31,31 @@ class ProductsController extends Controller
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
-    {
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string',
-        ]);
+{
+    $request->validate([
+        'category_id' => 'required|exists:categories,id',
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'qty' => 'required|integer|min:0',
+        'price' => 'required|integer|min:0'
+    ]);
 
-        Products::create([
-            'category_id' => $request->category_id,
-            'name' => $request->name,
-            'description' => $request->description,
-            'is_active' => $request->has('is_active')
-        ]);
+    Products::create([
+        'category_id' => $request->category_id,
+        'name' => $request->name,
+        'description' => $request->description,
+        'qty' => $request->qty,
+        'price' => $request->price,
+        'is_active' => $request->has('is_active')
+    ]);
 
-        return redirect()
-            ->route('products')
-            ->with('success','Product created successfully');
-    }
+    return redirect()
+        ->route('products')
+        ->with('success','Product created successfully');
+}
 
 
 
-    // public function show(string $id)
-    // {
-    //     $product = Products::with('category')->findOrFail($id);
-
-    //     return view('pages.product.show', compact('product'));
-    // }
 
 
 
@@ -71,27 +69,31 @@ class ProductsController extends Controller
 
 
 
-    public function update(Request $request, string $id)
-    {
-        $product = Products::findOrFail($id);
+   public function update(Request $request, string $id)
+{
+    $product = Products::findOrFail($id);
 
-        $request->validate([
-            'category_id' => 'required|exists:categories,id',
-            'name' => 'required|string|max:255',
-            'description' => 'nullable|string'
-        ]);
+    $request->validate([
+        'category_id' => 'required|exists:categories,id',
+        'name' => 'required|string|max:255',
+        'description' => 'nullable|string',
+        'qty' => 'required|integer|min:0',
+        'price' => 'required|integer|min:0'
+    ]);
 
-        $product->update([
-            'category_id' => $request->category_id,
-            'name' => $request->name,
-            'description' => $request->description,
-            'is_active' => $request->has('is_active')
-        ]);
+    $product->update([
+        'category_id' => $request->category_id,
+        'name' => $request->name,
+        'description' => $request->description,
+        'qty' => $request->qty,
+        'price' => $request->price,
+        'is_active' => $request->has('is_active')
+    ]);
 
-        return redirect()
-            ->route('products')
-            ->with('success','Product updated successfully');
-    }
+    return redirect()
+        ->route('products')
+        ->with('success','Product updated successfully');
+}
 
 
 

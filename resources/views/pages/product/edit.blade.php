@@ -97,6 +97,41 @@
                             class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition resize-none">{{ old('description', $product->description) }}</textarea>
                     </div>
 
+                    <!-- Qty -->
+<div>
+    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+        Quantity <span class="text-red-500">*</span>
+    </label>
+
+    <input type="number"
+        name="qty"
+        value="{{ old('qty', $product->qty ?? '') }}"
+        min="0"
+        placeholder="e.g. 10"
+        class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition">
+</div>
+
+
+<!-- Price -->
+<div>
+    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+        Price <span class="text-red-500">*</span>
+    </label>
+
+    <!-- Visible input -->
+    <input type="text"
+        id="price_display"
+        placeholder="Rp 0"
+        value="{{ old('price', $product->price ?? '') }}"
+        class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition">
+
+    <!-- Hidden input -->
+    <input type="hidden"
+        name="price"
+        id="price"
+        value="{{ old('price', $product->price ?? '') }}">
+</div>
+
 
                     <!-- Status -->
                     <div>
@@ -147,5 +182,38 @@
         </div>
 
     </main>
+    <script>
+
+const priceDisplay = document.getElementById('price_display');
+const priceHidden = document.getElementById('price');
+
+function formatRupiah(value){
+    return new Intl.NumberFormat('id-ID', {
+        style: 'currency',
+        currency: 'IDR',
+        minimumFractionDigits: 0
+    }).format(value);
+}
+
+// saat load halaman (edit form)
+if(priceHidden.value){
+    priceDisplay.value = formatRupiah(priceHidden.value);
+}
+
+priceDisplay.addEventListener('input', function(){
+
+    let value = this.value.replace(/[^0-9]/g, '');
+
+    priceHidden.value = value;
+
+    if(value){
+        this.value = formatRupiah(value);
+    }else{
+        this.value = '';
+    }
+
+});
+
+</script>
 
 @endsection

@@ -94,6 +94,33 @@
                             class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition resize-none">{{ old('description') }}</textarea>
                     </div>
 
+                    <!-- Qty -->
+<div>
+    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+        Quantity <span class="text-red-500">*</span>
+    </label>
+
+    <input type="number" name="qty" value="{{ old('qty') }}" min="0"
+        placeholder="e.g. 10"
+        class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition">
+</div>
+
+
+<!-- Price -->
+<div>
+    <label class="block text-sm font-medium text-gray-700 mb-1.5">
+        Price <span class="text-red-500">*</span>
+    </label>
+
+    <!-- Visible input -->
+    <input type="text" id="price_display"
+        placeholder="Rp 0"
+        class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition">
+
+    <!-- Hidden input (yang dikirim ke backend) -->
+    <input type="hidden" name="price" id="price" value="{{ old('price') }}">
+</div>
+
 
                     <!-- Status -->
                     <div>
@@ -144,5 +171,30 @@
         </div>
 
     </main>
+
+    <script>
+
+const priceDisplay = document.getElementById('price_display');
+const priceHidden = document.getElementById('price');
+
+priceDisplay.addEventListener('input', function () {
+
+    let value = this.value.replace(/[^0-9]/g, '');
+
+    priceHidden.value = value;
+
+    if(value){
+        this.value = new Intl.NumberFormat('id-ID', {
+            style: 'currency',
+            currency: 'IDR',
+            minimumFractionDigits: 0
+        }).format(value);
+    }else{
+        this.value = '';
+    }
+
+});
+
+</script>
 
 @endsection

@@ -76,7 +76,8 @@
                                         <tr class="bg-gray-50 text-xs text-gray-400 font-semibold uppercase tracking-wide">
                                             <th class="px-4 py-3 text-left">Categories</th>
                                             <th class="px-4 py-3 text-left">Name</th>
-                                            <th class="px-4 py-3 text-left">Description</th>
+                                            <th class="px-4 py-3 text-left">Quantity</th>
+                                            <th class="px-4 py-3 text-left">Price</th>
                                             <th class="px-4 py-3 text-center">Status</th>
                                             <th class="px-4 py-3 text-left">Created At</th>
                                             <th class="px-4 py-3 text-center">Actions</th>
@@ -99,10 +100,15 @@
                                                     {{ $product->name }}
                                                 </td>
 
-                                                <!-- Description -->
+                                                <!-- Qty -->
                                                 <td class="px-4 py-3 text-gray-500 max-w-[140px] truncate"
-                                                    title="{{ $product->description }}">
-                                                    {{ $product->description ?? '—' }}
+                                                    title="{{ $product->qty }}">
+                                                    {{ $product->qty ?? '—' }}
+                                                </td>
+
+                                                <td class="px-4 py-3 text-gray-500 max-w-[140px] truncate"
+                                                    title="Rp {{ number_format($product->price, 0, ',', '.') }}">
+                                                    Rp {{ number_format($product->price, 0, ',', '.') ?? '—' }}
                                                 </td>
 
                                                 <!-- Status -->

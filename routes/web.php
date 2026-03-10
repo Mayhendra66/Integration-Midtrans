@@ -31,11 +31,8 @@ Route::get('/seed', function () {
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/', function () {
-        return view('pages.index');
-    });
-
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+   
+    Route::get('/', [DashboardController::class, 'index'])->name('dashboard');
 
 
 

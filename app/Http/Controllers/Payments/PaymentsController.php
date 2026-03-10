@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Payments;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Products;
 use Illuminate\Http\Request;
 
 class PaymentsController extends Controller
@@ -12,7 +14,16 @@ class PaymentsController extends Controller
      */
     public function index()
     {
-        return view('pages.payment.index');
+
+    $products = Products::latest()->get();
+    $categories = Category::latest()->get();
+        
+
+
+    return view('pages.payment.index', compact(
+        'products',
+        'categories'
+    ));
     }
 
     /**
