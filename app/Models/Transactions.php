@@ -9,7 +9,7 @@ class Transactions extends Model
 {
     use HasFactory;
 
-    protected $table = '$transactions';
+    protected $table = 'transactions'; // ← fixed, removed $
 
     protected $fillable = [
         'category_id',
@@ -21,7 +21,6 @@ class Transactions extends Model
         'status',
         'note'
     ];
-
 
     public function category()
     {

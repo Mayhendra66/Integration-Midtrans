@@ -32,8 +32,8 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-800">Rp 48.2M</p>
-                <p class="text-xs text-green-500 mt-1 font-medium">↑ 12.5% this month</p>
+                <p class="text-2xl font-bold text-gray-800">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
+                <p class="text-xs text-green-500 mt-1 font-medium">↑ Up% All Transaction </p>
             </div>
 
             <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
@@ -48,8 +48,8 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-800">{{ $activeCategories }}</p>
-                <p class="text-xs text-gray-400 mt-1 font-medium">From {{ $totalCategories }} Categories</p>
+                <p class="text-2xl font-bold text-gray-800">{{ $activeCategories ?? 0}}</p>
+                <p class="text-xs text-gray-400 mt-1 font-medium">From {{ $totalCategories ?? 0 }} Categories</p>
             </div>
 
             <div class="bg-white rounded-2xl border border-gray-100 p-5 shadow-sm">
@@ -64,11 +64,11 @@
                     </div>
                 </div>
 <p class="text-2xl font-bold text-gray-800">
-    {{ $activeProducts }}
+    {{ $activeProducts ?? 0}}
 </p>
 
 <p class="text-xs text-gray-400 mt-1 font-medium">
-    From {{ $totalProducts }} Products
+    From {{ $totalProducts ?? 0}} Products
 </p>
             </div>
 
@@ -83,7 +83,7 @@
                         </svg>
                     </div>
                 </div>
-                <p class="text-2xl font-bold text-gray-800">98.4%</p>
+                <p class="text-2xl font-bold text-gray-800">{{ $paymentRate ?? 0}}%</p>
                 <p class="text-xs text-green-500 mt-1 font-medium">Success rate</p>
             </div>
 
@@ -94,89 +94,51 @@
 
             <!-- Recent Transactions -->
             <div class="lg:col-span-2 bg-white rounded-2xl border border-gray-100 shadow-sm">
-                <div class="flex items-center justify-between px-6 py-4 border-b border-gray-50">
-                    <h2 class="text-sm font-semibold text-gray-800">Recent Transactions</h2>
-                    <a href="/payments" class="text-xs text-blue-600 hover:text-blue-700 font-medium">View all</a>
-                </div>
-                <div class="divide-y divide-gray-50">
+    <div class="flex items-center justify-between px-6 py-4 border-b border-gray-50">
+        <h2 class="text-sm font-semibold text-gray-800">Recent Transactions</h2>
+    </div>
+    <div class="divide-y divide-gray-50">
 
-                    <div class="flex items-center gap-4 px-6 py-4">
-                        <div class="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a"
-                                stroke-width="2">
-                                <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-800">Order #INV-00482</p>
-                            <p class="text-xs text-gray-400">Bank Transfer · BCA</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-semibold text-gray-800">Rp 320,000</p>
-                            <span
-                                class="inline-block text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded-full font-medium">Paid</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4 px-6 py-4">
-                        <div class="w-9 h-9 bg-yellow-50 rounded-xl flex items-center justify-center shrink-0">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ca8a04"
-                                stroke-width="2">
-                                <circle cx="12" cy="12" r="10" />
-                                <line x1="12" y1="8" x2="12" y2="12" />
-                                <line x1="12" y1="16" x2="12.01" y2="16" />
-                            </svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-800">Order #INV-00481</p>
-                            <p class="text-xs text-gray-400">GoPay · E-Wallet</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-semibold text-gray-800">Rp 155,000</p>
-                            <span
-                                class="inline-block text-xs bg-yellow-50 text-yellow-600 px-2 py-0.5 rounded-full font-medium">Pending</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4 px-6 py-4">
-                        <div class="w-9 h-9 bg-green-50 rounded-xl flex items-center justify-center shrink-0">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a"
-                                stroke-width="2">
-                                <polyline points="20 6 9 17 4 12" />
-                            </svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-800">Order #INV-00480</p>
-                            <p class="text-xs text-gray-400">Credit Card · Visa</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-semibold text-gray-800">Rp 890,000</p>
-                            <span
-                                class="inline-block text-xs bg-green-50 text-green-600 px-2 py-0.5 rounded-full font-medium">Paid</span>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-4 px-6 py-4">
-                        <div class="w-9 h-9 bg-red-50 rounded-xl flex items-center justify-center shrink-0">
-                            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#dc2626"
-                                stroke-width="2">
-                                <line x1="18" y1="6" x2="6" y2="18" />
-                                <line x1="6" y1="6" x2="18" y2="18" />
-                            </svg>
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-sm font-medium text-gray-800">Order #INV-00479</p>
-                            <p class="text-xs text-gray-400">OVO · E-Wallet</p>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-sm font-semibold text-gray-800">Rp 210,000</p>
-                            <span
-                                class="inline-block text-xs bg-red-50 text-red-500 px-2 py-0.5 rounded-full font-medium">Failed</span>
-                        </div>
-                    </div>
-
-                </div>
+        @forelse ($recentTransactions as $transaction)
+        <div class="flex items-center gap-4 px-6 py-4">
+            <div class="w-9 h-9 rounded-xl flex items-center justify-center shrink-0
+                {{ $transaction->status === 'success' ? 'bg-green-50' : ($transaction->status === 'failed' ? 'bg-red-50' : 'bg-yellow-50') }}">
+                @if ($transaction->status === 'success')
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2">
+                        <polyline points="20 6 9 17 4 12" />
+                    </svg>
+                @elseif ($transaction->status === 'failed')
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#dc2626" stroke-width="2">
+                        <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+                    </svg>
+                @else
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#ca8a04" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                    </svg>
+                @endif
             </div>
+            <div class="flex-1 min-w-0">
+                <p class="text-sm font-medium text-gray-800">Order #{{ $transaction->id }}</p>
+                <p class="text-xs text-gray-400">{{ $transaction->product->name ?? '-' }}</p>
+            </div>
+            <div class="text-right">
+                <p class="text-sm font-semibold text-gray-800">
+                    Rp {{ number_format($transaction->total_price, 0, ',', '.') }}
+                </p>
+                <span class="inline-block text-xs px-2 py-0.5 rounded-full font-medium
+                    {{ $transaction->status === 'success' ? 'bg-green-50 text-green-600' : ($transaction->status === 'failed' ? 'bg-red-50 text-red-600' : 'bg-yellow-50 text-yellow-600') }}">
+                    {{ ucfirst($transaction->status) }}
+                </span>
+            </div>
+        </div>
+        @empty
+        <div class="px-6 py-8 text-center text-sm text-gray-400">
+            No transactions yet.
+        </div>
+        @endforelse
+
+    </div>
+</div>
 
             <div class="bg-white rounded-2xl border border-gray-100 shadow-sm">
                 <div class="flex items-center justify-between px-6 py-4 border-b border-gray-50">

@@ -34,47 +34,44 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                         <!-- Category -->
-                       <div>
-    <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1.5">
-        Category <span class="text-red-500">*</span>
-    </label>
+                        <div>
+                            <label for="category_id" class="block text-sm font-medium text-gray-700 mb-1.5">
+                                Category <span class="text-red-500">*</span>
+                            </label>
 
-    <select name="category_id" id="category_id" onchange="filterProducts(this.value); updateCategory(this)"
-        class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition bg-white text-gray-700">
+                            <select name="category_id" id="category_id"
+                                onchange="filterProducts(this.value); updateCategory(this)"
+                                class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition bg-white text-gray-700">
 
-        <option value="">-- Select Category --</option>
+                                <option value="">-- Select Category --</option>
 
-        @foreach ($products->unique('category_id') as $product)
-            <option value="{{ $product->category_id }}">
-                {{ $product->category->name }}
-            </option>
-        @endforeach
+                                @foreach ($products->unique('category_id') as $product)
+                                    <option value="{{ $product->category_id }}">
+                                        {{ $product->category->name }}
+                                    </option>
+                                @endforeach
 
-    </select>
-</div>
+                            </select>
+                        </div>
 
                         <!-- Product -->
                         <div>
                             <label for="product_id" class="block text-sm font-medium text-gray-700 mb-1.5">
                                 Product <span class="text-red-500">*</span>
                             </label>
-                           <select name="product_id" id="product_id" onchange="updatePrice(this)"
-class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition bg-white text-gray-700">
+                            <select name="product_id" id="product_id" onchange="updatePrice(this)"
+                                class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400 focus:ring-2 focus:ring-blue-100 transition bg-white text-gray-700">
 
-<option value="">-- Select Product --</option>
+                                <option value="">-- Select Product --</option>
 
-@foreach ($products as $product)
-<option
-value="{{ $product->id }}"
-data-price="{{ $product->price }}"
-data-stock="{{ $product->qty }}"
-data-category="{{ $product->category_id }}"
->
-{{ $product->name }}
-</option>
-@endforeach
+                                @foreach ($products as $product)
+                                    <option value="{{ $product->id }}" data-price="{{ $product->price }}"
+                                        data-stock="{{ $product->qty }}" data-category="{{ $product->category_id }}">
+                                        {{ $product->name }}
+                                    </option>
+                                @endforeach
 
-</select>
+                            </select>
                         </div>
 
                     </div>
@@ -84,11 +81,12 @@ data-category="{{ $product->category_id }}"
                 <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
                     <h2 class="text-sm font-semibold text-gray-700 mb-5">Transaction Details</h2>
 
-                    <form method="POST" id="posForm" class="space-y-4">
+                    <form method="POST" id="posForm" class="space-y-4" onsubmit="return false;">
                         @csrf
 
                         <input type="hidden" name="product_id" id="hidden_product_id">
                         <input type="hidden" name="category_id" id="hidden_category_id">
+                        <input type="hidden" id="hidden_unit_price" name="unit_price">
                         <input type="hidden" name="total_price" id="total_price">
 
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -144,7 +142,7 @@ data-category="{{ $product->category_id }}"
                                 class="flex-1 py-2.5 rounded-xl border border-gray-200 text-sm font-semibold text-gray-600 hover:bg-gray-50 transition">
                                 Reset
                             </button>
-                            <button type="submit"
+                            <button type="submit" onclick="processPayment()"
                                 class="flex-1 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">
                                 Process Payment
                             </button>
@@ -211,47 +209,155 @@ data-category="{{ $product->category_id }}"
 
     </main>
 
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js"
+        data-client-key="{{ config('services.midtrans.client_key') }}"></script>
 
 
     <script>
-      function filterProducts(categoryId){
+        function processPayment() {
+            const productId = document.getElementById('hidden_product_id').value;
+            const categoryId = document.getElementById('hidden_category_id').value;
+            const unitPrice = document.getElementById('hidden_unit_price').value; // ← raw number
+            const qty = document.getElementById('qty').value;
+            const totalPrice = document.getElementById('total_price').value;
+            const note = document.getElementById('note').value;
 
-const productSelect = document.getElementById('product_id');
-const options = productSelect.querySelectorAll('option');
+            console.log('Data:', {
+                productId,
+                categoryId,
+                unitPrice,
+                qty,
+                totalPrice
+            });
 
-options.forEach(option => {
+            if (!productId || !categoryId || !unitPrice || !qty || !totalPrice) {
+                alert('Please fill in all required fields.');
+                return;
+            }
 
-if(option.value === ""){
-option.hidden = false;
-return;
-}
+            fetch('{{ route('payment.snap-token') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        category_id: categoryId,
+                        qty: parseInt(qty),
+                        total_price: parseInt(totalPrice),
+                        unit_price: parseInt(unitPrice),
+                        note: note,
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    console.log('Server response:', data);
 
-const productCategory = option.dataset.category;
+                    if (data.error) {
+                        alert('Error: ' + data.message);
+                        return;
+                    }
 
-if(productCategory == categoryId){
-option.hidden = false;
-}else{
-option.hidden = true;
-}
+                    if (!data.snap_token) {
+                        alert('Failed to get payment token.');
+                        return;
+                    }
 
-});
+                    snap.pay(data.snap_token, {
+                        onSuccess: function(result) {
+                            console.log('onSuccess fired:', result); // ← add this
+                            updateTransactionStatus(data.transaction_id, 'success');
+                        },
+                        onPending: function(result) {
+                            console.log('onPending fired:', result);
+                            console.log('transaction_id:', data.transaction_id); // ← add this
+                            alert('transaction_id: ' + data.transaction_id);
+                            updateTransactionStatus(data.transaction_id, 'success'); // ← treat as success
+                        },
+                        onError: function(result) {
+                            console.log('onError fired:', result); // ← add this
+                            updateTransactionStatus(data.transaction_id, 'failed');
+                        },
+                        onClose: function() {
+                            console.log('onClose fired'); // ← add this
+                            alert('Payment popup closed.');
+                        }
+                    });
+                })
+                .catch(err => {
+                    console.error('Fetch error:', err);
+                    alert('Something went wrong: ' + err.message);
+                });
+        }
 
-productSelect.value = "";
-}
+        function updateTransactionStatus(transactionId, status) {
+            fetch('{{ route('payment.update-status') }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        transaction_id: transactionId,
+                        status: status
+                    })
+                })
+                .then(res => res.json()) // ← add this
+                .then(data => {
+                    console.log('Update status response:', data); // ← add this
+                    if (status === 'success') {
+                        alert('Payment successful! Transaction saved.');
+                        resetForm();
+                    } else if (status === 'failed') {
+                        alert('Payment failed.');
+                    }
+                })
+                .catch(err => {
+                    console.error('Update status error:', err);
+                });
+        }
 
+        function filterProducts(categoryId) {
+            const productSelect = document.getElementById('product_id');
+            const options = productSelect.querySelectorAll('option');
+
+            options.forEach(option => {
+                if (option.value === "") {
+                    option.hidden = false;
+                    return;
+                }
+                const productCategory = option.dataset.category;
+                option.hidden = productCategory != categoryId;
+            });
+
+            productSelect.value = "";
+
+            // ← reset product related fields when category changes
+            document.getElementById('hidden_product_id').value = '';
+            document.getElementById('hidden_unit_price').value = '';
+            document.getElementById('unit_price_display').value = '';
+            document.getElementById('total_price').value = 0;
+            document.getElementById('total_price_display').value = '';
+            document.getElementById('summary_product').textContent = '—';
+            document.getElementById('summary_stock').textContent = '—';
+            document.getElementById('summary_price').textContent = 'Rp 0';
+            document.getElementById('summary_qty').textContent = '0';
+            document.getElementById('summary_total').textContent = 'Rp 0';
+        }
 
         function formatRupiah(number) {
             return Number(number).toLocaleString('id-ID');
         }
 
-       
         function updatePrice(select) {
             const opt = select.options[select.selectedIndex];
-            const price = opt?.dataset.price ?? 0;
+            const price = opt?.dataset.price ?? 0; // ← raw number
             const stock = opt?.dataset.stock ?? '—';
             const name = opt?.text ?? '—';
 
             document.getElementById('hidden_product_id').value = select.value;
+            document.getElementById('hidden_unit_price').value = price; // ← store raw price here
             document.getElementById('unit_price_display').value = select.value ? formatRupiah(price) : '';
             document.getElementById('summary_product').textContent = select.value ? name : '—';
             document.getElementById('summary_stock').textContent = select.value ? stock : '—';
@@ -260,19 +366,19 @@ productSelect.value = "";
             calculateTotal();
         }
 
-        function updateCategory(select){
+        function updateCategory(select) {
+            const selectedText = select.options[select.selectedIndex].text;
 
-    const selectedText = select.options[select.selectedIndex].text;
+            document.getElementById('summary_category').textContent =
+                select.value ? selectedText : '—';
 
-    document.getElementById('summary_category').textContent =
-        select.value ? selectedText : '—';
-
-}
+            document.getElementById('hidden_category_id').value = select.value; // ← set hidden category
+        }
 
         function calculateTotal() {
-            const priceInput = document.getElementById('unit_price_display').value.replace(/\./g, '');
+            const unitPrice = document.getElementById('hidden_unit_price').value; // ← use raw price
             const qty = parseInt(document.getElementById('qty').value) || 0;
-            const price = parseFloat(priceInput) || 0;
+            const price = parseFloat(unitPrice) || 0;
             const total = qty * price;
 
             document.getElementById('total_price').value = total;
@@ -285,6 +391,7 @@ productSelect.value = "";
             document.getElementById('unit_price_display').value = '';
             document.getElementById('total_price_display').value = '';
             document.getElementById('total_price').value = 0;
+            document.getElementById('hidden_unit_price').value = ''; // ← clear raw price
             document.getElementById('summary_product').textContent = '—';
             document.getElementById('summary_stock').textContent = '—';
             document.getElementById('summary_price').textContent = 'Rp 0';
@@ -296,6 +403,9 @@ productSelect.value = "";
             document.getElementById('posForm').reset();
             document.getElementById('category_id').value = '';
             document.getElementById('product_id').value = '';
+            document.getElementById('hidden_category_id').value = '';
+            document.getElementById('hidden_product_id').value = '';
+            document.getElementById('hidden_unit_price').value = ''; // ← clear raw price
             document.getElementById('unit_price_display').value = '';
             document.getElementById('total_price_display').value = '';
             document.getElementById('total_price').value = 0;

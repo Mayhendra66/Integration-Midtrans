@@ -61,7 +61,10 @@ Route::middleware(['auth'])->group(function () {
 
 
 
+   
     Route::get('/payment', [PaymentsController::class, 'index'])->name('payment');
+Route::post('/payment/snap-token', [PaymentsController::class, 'getSnapToken'])->name('payment.snap-token');
+Route::post('/payment/update-status', [PaymentsController::class, 'updateStatus'])->name('payment.update-status');
 
 
 
